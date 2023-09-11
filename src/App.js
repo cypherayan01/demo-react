@@ -41,10 +41,10 @@ function App() {
         <FusionChartComponent />
       </header>
       <div style={{ height: '50px',  }}></div>
-      <header className="App-header">
+      <div>
         <h1>Data Table Example</h1>
         <DataTableComponent data={data} columns={columns} />
-      </header>
+      </div>
     </div>
   );
 }

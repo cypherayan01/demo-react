@@ -1,82 +1,45 @@
 // DataTable.js
 import React, { useRef } from 'react';
-
-import { useTable } from 'react-table';
-import { Document, Page,Text, pdfjs } from 'react-pdf';
-import '../style/DataTable.css';
-
-
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
+import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+// import '../style/DataTable.css';
 
 const DataTableComponent = ({ data, columns }) => {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({
-    columns,
-    data,
-  });
-
   const pdfRef = useRef();
-  
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.autoTable({
+      head: [columns.map((column) => column.Header)],
+      body: data.map((item) => columns.map((column) => item[column.accessor])),
+    });
+    doc.save('data.pdf');
+  };
+
   return (
     <div>
-      <div>
-      <button
-          onClick={() => {
-           
-            pdfRef.current.toBlob((blob) => {
-              const url = URL.createObjectURL(blob);
-              window.open(url);
-            });
-          }}
+      <button>
+        <CSVLink
+          data={data}
+          headers={columns.map((column) => ({ label: column.Header, key: column.accessor }))}
+          filename="data.csv"
         >
-          Download PDF
-        </button>
-      </div>
-    <table {...getTableProps()} className="table">
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                return (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-    <div style={{ display: 'none' }}>
-    <Document
-  file=""
-  onLoadSuccess={() => {
-    // Ensure that the PDF is loaded with the correct data before rendering
-    pdfRef.current.updateContainer();
-  }}
-  ref={pdfRef}
->
-  <Page size="A4">
-    {/* Your PDF content */}
-    <Text>Hello, this is a PDF!</Text>
-  </Page>
-</Document>
-      </div>
+          Download as CSV
+        </CSVLink>
+      </button>
+      <button onClick={handleDownloadPDF}>Download as PDF</button>
+      <ReactTable
+        data={data}
+        columns={columns}
+        filterable
+        sortable
+        defaultSorted={[{ id: '', desc: false }]}
+        className="-striped -highlight" // Add custom CSS classes
+        style={{ border: '4px solid black', borderRadius: '5px' }} // Add inline styles
+    />
     </div>
   );
 };
