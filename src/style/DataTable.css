@@ -1,0 +1,22 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  
+  .table th {
+    background-color: #f1e655;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  /* .table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  } */
